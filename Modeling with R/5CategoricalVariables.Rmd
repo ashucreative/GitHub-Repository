@@ -1,0 +1,100 @@
+---
+title: "Regression using Categorical Variable"
+author: "Ashutosh Kumar"
+date: "2/22/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Some examples of using categorical variables.
+```{r echo=TRUE}
+library(ISLR)
+data(Credit)
+?Credit
+```
+## Response variable of interest is 'Balance'
+## Predictor: 'student': Yes or No
+```{r echo=TRUE}
+Credit$Student
+
+Credit$std_dummy = ifelse(Credit$Student == "Yes", 1,0)
+mod1 = lm(Balance~std_dummy, data = Credit)
+summary(mod1)
+
+Credit$std_dummy = ifelse(Credit$Student == "Yes", 0,1)
+mod2 = lm(Balance~std_dummy, data = Credit)
+summary(mod2)
+
+```
+Without creating specific dummies, we can still do it.
+
+```{r echo=TRUE}
+mod2 = lm(Balance~ Student, data = Credit)
+summary(mod2)
+#model.matrix(mod2) this puts all data in matrix form
+```
+## Categorical variable with more than two levels
+## The variable 'Ethnicity' has three levels
+```{r echo=TRUE}
+mod3 = lm(Balance~ relevel(Ethnicity, ref = "Asian"), data = Credit)
+summary(mod3)
+#model.matrix(mod3) this puts all data in matrix form
+str(Credit)
+```
+
+Above we put Asian as the reference, instead of default given by R as 'African American'.
+
+```{r echo=TRUE}
+mod4 = lm(Balance~.-ID-std_dummy, data = Credit)
+summary(mod4)
+model.matrix(mod4)
+```
+
+# Example 2:
+
+```{r echo=TRUE}
+n=100
+y=rnorm(n)
+x = rep(c(1,2,3,4,5),n/5) #Assume that 1,2,3,4,5 represent qualitative levels
+length(x)
+
+mod5 = lm(y~as.factor(x))
+
+mod.reduced = lm(y~1)
+anova(mod.reduced, mod5) # Here we compared two models. full model and reduced model with null saying reduced is better.
+summary(mod5)
+```
+
+# Example 3:
+
+```{r echo=TRUE}
+data("Carseats")
+?Carseats
+
+mod6 = lm(Sales~., data = Carseats)
+summary(mod6)
+```
+
+To determine whether the categorical variable 'Shelveloc' is significantly associated with 'Sales'
+
+```{r echo=TRUE}
+mod.red = lm(Sales~.-ShelveLoc, data = Carseats)
+av = anova(mod.red, mod6)
+av$`Pr(>F)`
+```
+##Simulate Data
+```{r echo=TRUE}
+n = 100
+x = rnorm(n)
+y = exp(x)+rnorm(n)
+plot(x,y)
+
+mod7 = lm(y~x+I(x^2)+I(x^4)+I(x^5)+I(x^6))
+summary (mod7)
+
+mod8 = lm(y~x+I(x^2)+I(x^4)+I(x^5))
+summary (mod8)
+
+```
