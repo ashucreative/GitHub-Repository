@@ -192,6 +192,8 @@ print("Mean AUC Score - Random Forest: ", rfc_cv_score.mean())
 
 X.head(8)
 
+# Reducing the features based on predictive power and performing another classification exercise
+
 X1 = X.iloc[:, [78 ,74, 75, 62, 79, 5, 7, 1, 2, 0, 77, 6, 4, 76]]
 
 # Splitting into training and test sample
